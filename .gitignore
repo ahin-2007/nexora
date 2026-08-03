@@ -1,0 +1,24 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Databases
+*.db
+nexora.db
+
+# Environments and IDEs
+.env
+.venv
+env/
+venv/
+ENV/
+.idea/
+.vscode/
+.gemini/
+.agents/
+
+# Uploads and temporary files
+static/uploads/videos/*
+!static/uploads/videos/.gitkeep

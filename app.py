@@ -78,6 +78,28 @@ def save_uploaded_video(video_file):
 # Initialize database
 db.init_app(app)
 
+with app.app_context():
+    db.create_all()
+    try:
+        from sqlalchemy import inspect, text
+        inspector = inspect(db.engine)
+        if 'users' in inspector.get_table_names():
+            existing_cols = {col['name'] for col in inspector.get_columns('users')}
+            required_cols = {
+                'bio': 'TEXT',
+                'phone': 'VARCHAR(20)',
+                'headline': 'VARCHAR(100)',
+                'avatar_url': 'VARCHAR(255)'
+            }
+            with db.engine.connect() as conn:
+                for col_name, col_type in required_cols.items():
+                    if col_name not in existing_cols:
+                        conn.execute(text(f"ALTER TABLE users ADD COLUMN {col_name} {col_type}"))
+                conn.commit()
+    except Exception as e:
+        print(f"[!] Schema check warning: {e}")
+
+
 # Inject logged-in user into template context
 @app.before_request
 def load_logged_in_user():
@@ -961,26 +983,4 @@ def admin_material_delete(material_id):
     return redirect(url_for('admin_dashboard'))
 
 if __name__ == '__main__':
-    # Ensure database tables exist and schema matches model definitions
-    with app.app_context():
-        db.create_all()
-        try:
-            from sqlalchemy import inspect, text
-            inspector = inspect(db.engine)
-            if 'users' in inspector.get_table_names():
-                existing_cols = {col['name'] for col in inspector.get_columns('users')}
-                required_cols = {
-                    'bio': 'TEXT',
-                    'phone': 'VARCHAR(20)',
-                    'headline': 'VARCHAR(100)',
-                    'avatar_url': 'VARCHAR(255)'
-                }
-                with db.engine.connect() as conn:
-                    for col_name, col_type in required_cols.items():
-                        if col_name not in existing_cols:
-                            conn.execute(text(f"ALTER TABLE users ADD COLUMN {col_name} {col_type}"))
-                    conn.commit()
-        except Exception as e:
-            print(f"[!] Schema check warning: {e}")
-            
     app.run(debug=True, host='0.0.0.0', port=5000)
