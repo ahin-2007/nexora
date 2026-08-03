@@ -20,3 +20,5 @@ services:
         fromDatabase:
           name: nexoradb
           property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.11.9
