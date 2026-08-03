@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}{% if material %}Edit Study Resource: {{ material.title }}{% else %}Upload Study Resource{% endif %} | Nexora{% endblock %}
+
+{% block content %}
+<section style="padding: 60px 0 100px 0;">
+    <div class="container" style="max-width: 800px;">
+        
+        <!-- Breadcrumb / Back Navigation -->
+        <div style="margin-bottom: 24px;">
+            <a href="{{ url_for('admin_dashboard') }}" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--color-text-muted); font-size: 14px;">
+                <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i> Back to Admin Dashboard
+            </a>
+        </div>
+
+        <div class="glass-card" style="padding: 40px; border-radius: 20px;">
+            <h2 style="font-size: 28px; font-weight: 800; margin-bottom: 8px;">
+                {% if material %}Edit Study Material{% else %}Upload Study Material{% endif %}
+            </h2>
+            <p style="color: var(--color-text-muted); margin-bottom: 32px;">
+                {% if material %}Modify study material properties or download path link.{% else %}Provide access to PDFs, PPT decks, notes or practice questions.{% endif %}
+            </p>
+
+            <form action="{% if material %}{{ url_for('admin_material_edit', material_id=material.id) }}{% else %}{{ url_for('admin_material_create') }}{% endif %}" method="POST" style="display: flex; flex-direction: column; gap: 24px;">
+                
+                <!-- Document Title -->
+                <div class="form-group">
+                    <label for="title" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Document Title</label>
+                    <input type="text" id="title" name="title" required value="{{ material.title if material else '' }}" placeholder="e.g. React hooks Cheat Sheet" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                </div>
+
+                <!-- File Type & Size -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div class="form-group">
+                        <label for="file_type" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">File Type Format</label>
+                        <select id="file_type" name="file_type" required style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                            <option value="PDF" {% if material and material.file_type == 'PDF' %}selected{% endif %}>PDF Document</option>
+                            <option value="PPT" {% if material and material.file_type == 'PPT' %}selected{% endif %}>PPT Presentation Slides</option>
+                            <option value="Source Code" {% if material and material.file_type == 'Source Code' %}selected{% endif %}>Source Code Archive</option>
+                            <option value="Notes" {% if material and material.file_type == 'Notes' %}selected{% endif %}>Study Notes</option>
+                            <option value="Practice Questions" {% if material and material.file_type == 'Practice Questions' %}selected{% endif %}>Practice Questions Paper</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="file_size" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Estimated File Size</label>
+                        <input type="text" id="file_size" name="file_size" required value="{{ material.file_size if material else '' }}" placeholder="e.g. 2.4 MB, 540 KB" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                    </div>
+                </div>
+
+                <!-- URL Resource Link -->
+                <div class="form-group">
+                    <label for="file_url" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">File URL / Resource Link</label>
+                    <input type="text" id="file_url" name="file_url" required value="{{ material.file_url if material else '' }}" placeholder="https://drive.google.com/... or local assets path" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                </div>
+
+                <!-- Category & Course Linkage -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div class="form-group">
+                        <label for="category" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Category Subject</label>
+                        <select id="category" name="category" required style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                            <option value="General" {% if material and material.category == 'General' %}selected{% endif %}>General Resource</option>
+                            <option value="Web Development" {% if material and material.category == 'Web Development' %}selected{% endif %}>Web Development</option>
+                            <option value="Programming" {% if material and material.category == 'Programming' %}selected{% endif %}>Programming</option>
+                            <option value="Design" {% if material and material.category == 'Design' %}selected{% endif %}>Design</option>
+                            <option value="AI & Data" {% if material and material.category == 'AI & Data' %}selected{% endif %}>AI & Data Science</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="course_id" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Associate to Specific Course (Optional)</label>
+                        <select id="course_id" name="course_id" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                            <option value="" {% if not material or not material.course_id %}selected{% endif %}>-- None (Global Resource) --</option>
+                            {% for course in courses %}
+                                <option value="{{ course.id }}" {% if material and material.course_id == course.id %}selected{% endif %}>{{ course.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Submit / Cancel -->
+                <div style="display: flex; justify-content: flex-end; gap: 16px; margin-top: 12px; border-top: 1px solid var(--color-border); padding-top: 24px;">
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary" style="border: 1px solid var(--color-border); background: none;">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        {% if material %}Save Changes{% else %}Upload & Publish{% endif %}
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

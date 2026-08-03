@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Certificate - Nexora{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:900px; margin:60px auto; padding:20px;">
+    <div style="text-align:center; padding:60px 40px; background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius:12px; position:relative; overflow:hidden;">
+        
+        <!-- Decorative background -->
+        <div style="position:absolute; top:-50px; right:-50px; width:200px; height:200px; background:rgba(255,255,255,0.1); border-radius:50%;"></div>
+        <div style="position:absolute; bottom:-30px; left:-30px; width:150px; height:150px; background:rgba(255,255,255,0.1); border-radius:50%;"></div>
+        
+        <!-- Certificate Content -->
+        <div style="position:relative; z-index:10;">
+            <div style="font-size:14px; letter-spacing:3px; color:rgba(255,255,255,0.8); margin-bottom:20px; text-transform:uppercase;">Certificate of Completion</div>
+            
+            <h1 style="color:white; font-size:36px; margin:20px 0; font-weight:700;">{{ user.name }}</h1>
+            
+            <p style="color:rgba(255,255,255,0.9); font-size:16px; margin:20px 0;">has successfully completed the course</p>
+            
+            <h2 style="color:white; font-size:28px; margin:30px 0; font-weight:600;">{{ course.title }}</h2>
+            
+            <p style="color:rgba(255,255,255,0.8); font-size:14px; margin:30px 0;">
+                Issued on <strong>{{ now.strftime('%B %d, %Y') }}</strong>
+            </p>
+            
+            <div style="margin-top:40px; padding-top:20px; border-top:2px solid rgba(255,255,255,0.3);">
+                <p style="color:rgba(255,255,255,0.8); font-size:12px;">Certificate ID: {{ user.id }}-{{ course.id }}-{{ now.strftime('%Y%m%d') }}</p>
+            </div>
+            
+            <div style="margin-top:40px; display:flex; gap:20px; justify-content:center;">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary" style="padding:12px 30px; border-radius:8px; background:white; color:#667eea; font-weight:600; text-decoration:none;">Back to Dashboard</a>
+                <button onclick="window.print()" class="btn btn-secondary" style="padding:12px 30px; border-radius:8px; background:rgba(255,255,255,0.2); color:white; font-weight:600; border:2px solid white; cursor:pointer;">Print Certificate</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Make certificate printable
+    window.addEventListener('beforeprint', function() {
+        document.body.style.backgroundColor = 'white';
+    });
+</script>
+{% endblock %}

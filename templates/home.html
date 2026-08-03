@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Nexora | Master Computer Skills Online{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+    
+    <div class="container hero-grid">
+        <div class="hero-content">
+            <h1>Next-Generation Skills for the <span>Digital Era</span></h1>
+            <p>Master computer programming, database architectures, and UI/UX design. Learn from structured curricula and watch high-fidelity video tutorials on demand.</p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('courses') }}" class="btn btn-primary" id="hero-cta-explore">Explore Courses <i data-lucide="arrow-right" style="width:18px;height:18px;"></i></a>
+                <a href="{{ url_for('about') }}" class="btn btn-secondary" id="hero-cta-about">Our Mission</a>
+            </div>
+        </div>
+        
+        <div class="hero-visual">
+            <div class="hero-visual-card">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+                    <div style="display:flex; gap:6px;">
+                        <span style="width:10px;height:10px;border-radius:50%;background-color:var(--color-danger);"></span>
+                        <span style="width:10px;height:10px;border-radius:50%;background-color:var(--color-warning);"></span>
+                        <span style="width:10px;height:10px;border-radius:50%;background-color:var(--color-success);"></span>
+                    </div>
+                    <span style="font-size:12px;font-weight:700;color:var(--color-text-muted);">Nexora Console</span>
+                </div>
+                
+                <h3 style="font-size:18px; margin-bottom:12px;">Web Development Bootcamp</h3>
+                <p style="font-size:13px; color:var(--color-text-muted); margin-bottom:16px;">Curriculum progression tracking active...</p>
+                
+                <!-- Mock progress indicator -->
+                <div class="progress-text-wrap" style="margin-bottom:6px;">
+                    <span>Course Progress</span>
+                    <span class="progress-num">68%</span>
+                </div>
+                <div class="progress-container" style="margin-bottom:20px;">
+                    <div class="progress-bar" style="width: 68%;"></div>
+                </div>
+                
+                <div style="display:flex; align-items:center; gap:12px; background:rgba(79, 70, 229, 0.05); padding:12px; border-radius:8px; border:1px solid rgba(79, 70, 229, 0.1);">
+                    <i data-lucide="play-circle" style="color:var(--color-primary);"></i>
+                    <div style="font-size:12px;">
+                        <div style="font-weight:700;color:var(--color-text-title);">Next Lesson: CSS Grid</div>
+                        <div style="color:var(--color-text-muted);">18 minutes &bull; Lecture 2</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="visual-badge">
+                <div class="visual-badge-icon">
+                    <i data-lucide="award"></i>
+                </div>
+                <div>
+                    <div style="font-weight:800;font-size:14px;color:var(--color-text-title);">Industry Verified</div>
+                    <div style="font-size:11px;color:var(--color-text-muted);">Certificates awarded</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="glass-card stats-grid" style="border-radius:var(--radius-lg); background:rgba(255,255,255,0.7); pointer-events:none;">
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.students_count }}</div>
+                <div class="stat-label">Active Learners</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.courses_count }}</div>
+                <div class="stat-label">Specialist Courses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.instructors_count }}</div>
+                <div class="stat-label">Expert Mentors</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.rating }}</div>
+                <div class="stat-label">Student Rating</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Courses Section -->
+<section class="featured-courses-section" style="padding:40px 0 80px 0;">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-title-wrap">
+                <h2>Featured Learning Programs</h2>
+                <div class="section-subtitle">Specially curated courses to fast-track your computer science career.</div>
+            </div>
+            <a href="{{ url_for('courses') }}" class="btn btn-secondary btn-sm" id="btn-explore-all">Explore All <i data-lucide="chevron-right" style="width:16px;height:16px;"></i></a>
+        </div>
+        
+        <div class="course-grid">
+            {% for course in courses %}
+                <div class="glass-card course-card" onclick="window.location.href='{{ url_for('course_details', slug=course.slug) }}'">
+                    <div class="course-card-image-wrap" style="background: linear-gradient(135deg, {{ course.gradient_start }}, {{ course.gradient_end }})">
+                        <span class="course-card-badge">{{ course.category }}</span>
+                        <div class="course-card-title">{{ course.title }}</div>
+                    </div>
+                    
+                    <div class="course-card-body">
+                        <p class="course-card-desc">{{ course.description }}</p>
+                        
+                        <div class="course-card-meta">
+                            <div class="meta-item">
+                                <i data-lucide="bar-chart-2" style="width:14px;height:14px;"></i>
+                                <span>{{ course.difficulty }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i data-lucide="clock" style="width:14px;height:14px;"></i>
+                                <span>{{ course.duration }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i data-lucide="book-open" style="width:14px;height:14px;"></i>
+                                <span>{{ course.lectures|length }} lessons</span>
+                            </div>
+                        </div>
+                        
+                        <div class="course-card-footer">
+                            <div class="course-card-price {% if course.price == 0 %}free{% endif %}">
+                                {% if course.price == 0 %}Free{% else %}₹{{ "%.0f"|format(course.price) }}{% endif %}
+                            </div>
+                            
+                            {% if course.id in enrolled_course_ids %}
+                                <a href="{{ url_for('learn_intro', slug=course.slug) }}" class="btn btn-secondary btn-sm" onclick="event.stopPropagation();">Resume <i data-lucide="play" style="width:12px;height:12px;"></i></a>
+                            {% else %}
+                                <a href="{{ url_for('course_details', slug=course.slug) }}" class="btn btn-primary btn-sm" onclick="event.stopPropagation();">View Details</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="features-section" style="padding:80px 0; background-color:white; border-top:1px solid var(--color-border); border-bottom:1px solid var(--color-border);">
+    <div class="container">
+        <div style="text-align:center; max-width:600px; margin:0 auto 60px auto;">
+            <h2 style="font-size:32px; font-weight:800; margin-bottom:16px;">Designed for Accelerated Learning</h2>
+            <p style="color:var(--color-text-muted);">Nexora integrates tools that make reading code, watching lectures, and tracking progress seamless.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="glass-card feature-card">
+                <div class="feature-icon-box">
+                    <i data-lucide="video" style="width:28px;height:28px;"></i>
+                </div>
+                <h3>High-Fidelity Player</h3>
+                <p>Enjoy distraction-free lectures with embedded players, lesson skipping, and progress indicators.</p>
+            </div>
+            
+            <div class="glass-card feature-card">
+                <div class="feature-icon-box" style="background-color:var(--color-accent-light); color:var(--color-accent);">
+                    <i data-lucide="folder-git-2" style="width:28px;height:28px;"></i>
+                </div>
+                <h3>Resource Integration</h3>
+                <p>Download cheat sheets, starter files, and view markdown links directly underneath individual lecture videos.</p>
+            </div>
+            
+            <div class="glass-card feature-card" style="background-color:var(--color-primary-light); border-color:var(--color-primary);">
+                <div class="feature-icon-box" style="background-color:var(--color-primary); color:white;">
+                    <i data-lucide="circle-dot" style="width:28px;height:28px;"></i>
+                </div>
+                <h3>Dynamic Checklists</h3>
+                <p>Mark lessons completed on the fly. Watch your course progress bar and dashboard charts update instantly.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section" style="padding:80px 0 100px 0;">
+    <div class="container">
+        <div style="text-align:center; max-width:600px; margin:0 auto 60px auto;">
+            <h2 style="font-size:32px; font-weight:800; margin-bottom:16px;">What Our Alumni Say</h2>
+            <p style="color:var(--color-text-muted);">Discover how developers and designers use Nexora to reach their professional career goals.</p>
+        </div>
+        
+        <div class="course-grid">
+            <div class="glass-card" style="padding:32px;">
+                <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+                    <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg, #10b981, #059669);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;">
+                        JD
+                    </div>
+                    <div>
+                        <div style="font-weight:700;color:var(--color-text-title);font-size:15px;">Jane Doe</div>
+                        <div style="font-size:12px;color:var(--color-text-muted);">Frontend Engineer @ Vercel</div>
+                    </div>
+                </div>
+                <p style="font-size:14px; color:var(--color-text-body); font-style:italic;">"The layout transitions are outstanding. I enrolled in the ReactJS Component course and completed the curriculum in two days. The progress tracker kept me highly motivated!"</p>
+            </div>
+            
+            <div class="glass-card" style="padding:32px;">
+                <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+                    <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg, #3b82f6, #06b6d4);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;">
+                        AS
+                    </div>
+                    <div>
+                        <div style="font-weight:700;color:var(--color-text-title);font-size:15px;">Alex Smith</div>
+                        <div style="font-size:12px;color:var(--color-text-muted);">Python Developer @ Stripe</div>
+                    </div>
+                </div>
+                <p style="font-size:14px; color:var(--color-text-body); font-style:italic;">"As a beginner, I found the Python programming track exceptionally clean. The coding exercises linked in the lesson resource tab were incredibly helpful."</p>
+            </div>
+            
+            <div class="glass-card" style="padding:32px;">
+                <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+                    <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg, #ec4899, #d946ef);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;">
+                        ML
+                    </div>
+                    <div>
+                        <div style="font-weight:700;color:var(--color-text-title);font-size:15px;">Michael Lee</div>
+                        <div style="font-size:12px;color:var(--color-text-muted);">Lead UI/UX Designer</div>
+                    </div>
+                </div>
+                <p style="font-size:14px; color:var(--color-text-body); font-style:italic;">"The glassmorphic visual system matches the high-quality designs taught in the courses. The platform interface looks premium and is fully responsive."</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

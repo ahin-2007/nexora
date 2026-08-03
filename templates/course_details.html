@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }} | Nexora{% endblock %}
+
+{% block content %}
+<!-- Course Hero Banner -->
+<section class="course-detail-hero" style="background: linear-gradient(135deg, {{ course.gradient_start }}, {{ course.gradient_end }}); padding: 60px 0;">
+    <div class="container">
+        <div class="course-detail-hero-content">
+            <span class="detail-tag" style="background:rgba(255,255,255,0.2); border-color:rgba(255,255,255,0.3); margin-bottom:16px;">
+                {{ course.category }}
+            </span>
+            <h1 style="color:#fff; font-size:36px; font-weight:800; margin-bottom:16px;">{{ course.title }}</h1>
+            <p class="desc" style="color:rgba(255,255,255,0.9); font-size:16px; line-height:1.6; max-width:700px; margin-bottom:24px;">{{ course.description }}</p>
+            
+            <div class="detail-tags" style="display:flex; flex-wrap:wrap; gap:12px;">
+                <div class="detail-tag" style="background:rgba(0,0,0,0.25); color:#fff; padding:6px 12px; border-radius:8px; font-size:13px; display:flex; align-items:center; gap:6px;">
+                    <i data-lucide="user" style="width:16px;height:16px;"></i>
+                    <span>Instructor: {{ course.instructor or 'Nexora Academy' }}</span>
+                </div>
+                <div class="detail-tag" style="background:rgba(0,0,0,0.25); color:#fff; padding:6px 12px; border-radius:8px; font-size:13px; display:flex; align-items:center; gap:6px;">
+                    <i data-lucide="star" style="width:16px;height:16px; fill:#fde047; stroke:none;"></i>
+                    <span>Rating: {{ course.rating or 4.8 }}</span>
+                </div>
+                <div class="detail-tag" style="background:rgba(0,0,0,0.25); color:#fff; padding:6px 12px; border-radius:8px; font-size:13px; display:flex; align-items:center; gap:6px;">
+                    <i data-lucide="bar-chart-2" style="width:16px;height:16px;"></i>
+                    <span>Difficulty: {{ course.difficulty }}</span>
+                </div>
+                <div class="detail-tag" style="background:rgba(0,0,0,0.25); color:#fff; padding:6px 12px; border-radius:8px; font-size:13px; display:flex; align-items:center; gap:6px;">
+                    <i data-lucide="clock" style="width:16px;height:16px;"></i>
+                    <span>Duration: {{ course.duration }}</span>
+                </div>
+                <div class="detail-tag" style="background:rgba(0,0,0,0.25); color:#fff; padding:6px 12px; border-radius:8px; font-size:13px; display:flex; align-items:center; gap:6px;">
+                    <i data-lucide="book-open" style="width:16px;height:16px;"></i>
+                    <span>Lessons: {{ course.lectures|length }} lectures</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main details workflow -->
+<section class="container" style="padding: 60px 0 100px 0;">
+    <div class="course-detail-grid">
+        
+        <!-- Left: Course Overview & Curriculum -->
+        <div class="detail-main-content" style="display:flex; flex-direction:column; gap:40px;">
+            
+            <!-- Description section -->
+            <section class="glass-card" style="padding:28px; border-radius:16px;">
+                <h3 style="font-size:20px; font-weight:700; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="info" style="color:var(--color-primary);"></i> About the Course
+                </h3>
+                <p style="font-size:15px; color:var(--color-text-body); line-height:1.7; margin-bottom:16px;">{{ course.description }}</p>
+                <p style="font-size:15px; color:var(--color-text-body); line-height:1.7;">This course provides hands-on coding exercises, detailed explanations, and downloadable resources. Complete all lectures to earn your verified course completion certificate.</p>
+            </section>
+
+            <!-- Skills You'll Learn -->
+            {% if course.skills %}
+            <section class="glass-card" style="padding:28px; border-radius:16px;">
+                <h3 style="font-size:20px; font-weight:700; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="check-circle-2" style="color:#10b981;"></i> Skills You'll Learn
+                </h3>
+                <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                    {% for skill in course.skills.split(',') %}
+                        <span style="background:var(--color-bg-alt); color:var(--color-text-main); border:1px solid var(--color-border); padding:8px 14px; border-radius:20px; font-size:13px; font-weight:600; display:inline-flex; align-items:center; gap:6px;">
+                            <i data-lucide="check" style="width:14px; height:14px; color:#10b981;"></i> {{ skill.strip() }}
+                        </span>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+            
+            <!-- Curriculum Section -->
+            <section class="glass-card" style="padding:28px; border-radius:16px;">
+                <h3 style="font-size:20px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="list-video" style="color:var(--color-primary);"></i> Course Curriculum ({{ course.lectures|length }} Lectures)
+                </h3>
+                
+                {% if course.lectures %}
+                    <div class="curriculum-list" style="display:flex; flex-direction:column; gap:12px;">
+                        {% for lecture in course.lectures %}
+                            <div class="curriculum-item" style="display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-radius:12px; background:var(--color-bg-alt); border:1px solid var(--color-border);">
+                                <div style="display:flex; align-items:center; gap:16px;">
+                                    <div class="curr-order" style="font-weight:700; color:var(--color-primary); font-size:14px;">
+                                        {{ "%02d"|format(lecture.order_num) }}
+                                    </div>
+                                    <div class="curr-play-icon" style="color:var(--color-text-muted);">
+                                        <i data-lucide="play-circle" style="width:20px;height:20px;"></i>
+                                    </div>
+                                    <div class="curr-title-wrap">
+                                        <div class="curr-title" style="font-weight:600; font-size:15px; color:var(--color-text-title);">{{ lecture.title }}</div>
+                                        <div class="curr-meta" style="font-size:12px; color:var(--color-text-muted);">
+                                            <span>Duration: {{ lecture.duration }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {% if is_enrolled %}
+                                    <a href="{{ url_for('learn', slug=course.slug, lecture_id=lecture.id) }}" class="btn btn-secondary btn-sm" style="border-radius:8px;">Watch</a>
+                                {% else %}
+                                    <span style="font-size:12px; color:var(--color-text-muted); font-weight:600;">Locked</span>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p style="color:var(--color-text-muted);">No lessons are currently assigned to this course. Check back shortly!</p>
+                {% endif %}
+            </section>
+            
+            <!-- Prerequisites -->
+            <section class="glass-card" style="padding:28px; border-radius:16px;">
+                <h3 style="font-size:20px; font-weight:700; margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="shield-alert" style="color:var(--color-accent);"></i> Course Requirements
+                </h3>
+                <p style="font-size:14px; color:var(--color-text-body); line-height:1.6;">{{ course.requirements or "Basic computer navigation skills and an internet connection." }}</p>
+            </section>
+        </div>
+        
+        <!-- Right: Sticky enrollment checkout column -->
+        <div class="sticky-sidebar-wrap">
+            <div class="glass-card purchase-card">
+                <div class="purchase-price-tag" style="font-size:32px; font-weight:800; color:var(--color-text-title); margin-bottom:20px; text-align:center;">
+                    {% if course.price == 0 %}
+                        <span style="color:#10b981;">Free</span>
+                    {% else %}
+                        ₹{{ "%.0f"|format(course.price) }}
+                    {% endif %}
+                </div>
+                
+                {% if is_enrolled %}
+                    <div style="background-color:rgba(16, 185, 129, 0.08); padding:16px; border-radius:12px; border:1px solid rgba(16, 185, 129, 0.2); margin-bottom:20px;">
+                        <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; color:var(--color-text-title); margin-bottom:6px;">
+                            <span>Active Enrollment</span>
+                            <span>{{ progress_percent }}% Done</span>
+                        </div>
+                        <div class="progress-container" style="height:8px; background:var(--color-bg-alt); border-radius:10px; overflow:hidden;">
+                            <div class="progress-bar" style="width: {{ progress_percent }}%; height:100%; background:#10b981; border-radius:10px;"></div>
+                        </div>
+                    </div>
+                    
+                    <a href="{{ url_for('learn_intro', slug=course.slug) }}" class="btn btn-primary" style="width:100%; justify-content:center; padding:12px; border-radius:12px;" id="btn-resume-sidebar">
+                        Go to Classroom <i data-lucide="arrow-right" style="width:18px;height:18px; margin-left:8px;"></i>
+                    </a>
+                {% else %}
+                    <form action="{{ url_for('enroll', slug=course.slug) }}" method="POST" style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
+                        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:12px; border-radius:12px;" id="btn-enroll-sidebar">
+                            {% if course.price == 0 %}Enroll For Free{% else %}Enroll Now{% endif %} <i data-lucide="user-plus" style="width:18px;height:18px; margin-left:8px;"></i>
+                        </button>
+                        {% if course.price > 0 %}
+                            <button type="submit" class="btn btn-secondary" style="width:100%; justify-content:center; padding:12px; border-radius:12px; background:var(--color-accent); color:#fff; border:none;">
+                                Buy Now <i data-lucide="credit-card" style="width:18px;height:18px; margin-left:8px;"></i>
+                            </button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+                
+                <div class="purchase-includes" style="margin-top:24px; padding-top:20px; border-top:1px solid var(--color-border);">
+                    <h4 style="font-size:14px; font-weight:700; margin-bottom:12px;">Course Features:</h4>
+                    <ul style="display:flex; flex-direction:column; gap:10px; font-size:13px; color:var(--color-text-muted);">
+                        <li style="display:flex; align-items:center; gap:8px;">
+                            <i data-lucide="video" style="width:16px;height:16px; color:var(--color-primary);"></i>
+                            <span>{{ course.duration }} Video Content</span>
+                        </li>
+                        <li style="display:flex; align-items:center; gap:8px;">
+                            <i data-lucide="help-circle" style="width:16px;height:16px; color:var(--color-primary);"></i>
+                            <span>Interactive Practice Quiz</span>
+                        </li>
+                        <li style="display:flex; align-items:center; gap:8px;">
+                            <i data-lucide="file-text" style="width:16px;height:16px; color:var(--color-primary);"></i>
+                            <span>Downloadable Study Materials</span>
+                        </li>
+                        <li style="display:flex; align-items:center; gap:8px;">
+                            <i data-lucide="award" style="width:16px;height:16px; color:var(--color-primary);"></i>
+                            <span>Verified Certificate of Completion</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Related Courses Section -->
+    {% if related_courses %}
+        <div style="margin-top:80px; padding-top:40px; border-top:1px solid var(--color-border);">
+            <h2 style="font-size:24px; font-weight:800; margin-bottom:24px;">Related Courses in {{ course.category }}</h2>
+            <div class="course-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:24px;">
+                {% for rel in related_courses %}
+                    <div class="glass-card course-card" onclick="window.location.href='{{ url_for('course_details', slug=rel.slug) }}'" style="cursor:pointer;">
+                        <div class="course-card-image-wrap" style="background: linear-gradient(135deg, {{ rel.gradient_start }}, {{ rel.gradient_end }}); padding:16px; border-radius:12px 12px 0 0; color:#fff;">
+                            <span class="course-card-badge" style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:10px; font-size:11px;">{{ rel.category }}</span>
+                            <h4 style="font-size:16px; font-weight:700; margin-top:8px;">{{ rel.title }}</h4>
+                        </div>
+                        <div style="padding:16px;">
+                            <p style="font-size:13px; color:var(--color-text-muted); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">{{ rel.description }}</p>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; font-size:13px; font-weight:700;">
+                                <span>{% if rel.price == 0 %}Free{% else %}₹{{ "%.0f"|format(rel.price) }}{% endif %}</span>
+                                <span style="color:var(--color-primary);">View Details &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

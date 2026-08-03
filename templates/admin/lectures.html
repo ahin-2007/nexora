@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Lectures: {{ course.title }} | Nexora{% endblock %}
+
+{% block content %}
+<section style="padding: 60px 0 100px 0;">
+    <div class="container">
+        
+        <!-- Back Navigation & Course Context -->
+        <div style="margin-bottom: 24px;">
+            <a href="{{ url_for('admin_dashboard') }}" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--color-text-muted); font-size: 14px;">
+                <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i> Back to Admin Dashboard
+            </a>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <span style="font-size: 13px; font-weight: 700; color: var(--color-primary); text-transform: uppercase; tracking-spacing: 0.05em;">Curriculum Builder</span>
+                <h1 style="font-size: 32px; font-weight: 800; margin-top: 4px;">{{ course.title }}</h1>
+                <p style="color: var(--color-text-muted); margin-top: 4px;">Add, reorder, or edit lectures for this syllabus category.</p>
+            </div>
+            
+            <a href="{{ url_for('admin_lecture_create', course_id=course.id) }}" class="btn btn-primary">
+                <i data-lucide="plus-circle" style="width: 18px; height: 18px;"></i> Add Lecture
+            </a>
+        </div>
+
+        <div class="glass-card" style="padding: 0; overflow-x: auto; border-radius: 16px;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 800px;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--color-border); background: rgba(241, 245, 249, 0.5);">
+                        <th style="padding: 16px 24px; font-weight: 700; font-size: 14px; color: var(--color-text-title); width: 80px;">Order</th>
+                        <th style="padding: 16px 24px; font-weight: 700; font-size: 14px; color: var(--color-text-title);">Lecture Title</th>
+                        <th style="padding: 16px 24px; font-weight: 700; font-size: 14px; color: var(--color-text-title);">Duration</th>
+                        <th style="padding: 16px 24px; font-weight: 700; font-size: 14px; color: var(--color-text-title);">Video Source URL</th>
+                        <th style="padding: 16px 24px; font-weight: 700; font-size: 14px; color: var(--color-text-title); text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if lectures %}
+                        {% for lecture in lectures %}
+                            <tr style="border-bottom: 1px solid var(--color-border); transition: background var(--transition-fast);">
+                                <td style="padding: 16px 24px; font-weight: 700; font-size: 15px; color: var(--color-primary);">
+                                    #{{ lecture.order_num }}
+                                </td>
+                                <td style="padding: 16px 24px;">
+                                    <div style="font-weight: 700; color: var(--color-text-title);">{{ lecture.title }}</div>
+                                    <div style="font-size: 12px; color: var(--color-text-muted); max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        {{ lecture.description or 'No description provided.' }}
+                                    </div>
+                                </td>
+                                <td style="padding: 16px 24px; font-size: 14px; font-weight: 600;">
+                                    {{ lecture.duration }}
+                                </td>
+                                <td style="padding: 16px 24px; font-size: 13px; font-family: monospace; color: var(--color-text-muted);">
+                                    {{ lecture.video_url }}
+                                </td>
+                                <td style="padding: 16px 24px; text-align: right;">
+                                    <div style="display: inline-flex; gap: 8px;">
+                                        <a href="{{ url_for('admin_lecture_edit', course_id=course.id, lecture_id=lecture.id) }}" class="btn btn-secondary btn-sm" style="padding: 6px 12px; border-radius: 8px; font-size: 13px;">
+                                            <i data-lucide="edit-3" style="width: 14px; height: 14px;"></i> Edit
+                                        </a>
+                                        <form action="{{ url_for('admin_lecture_delete', course_id=course.id, lecture_id=lecture.id) }}" method="POST" onsubmit="return confirm('Delete this lecture? This deletes student progression states associated with this lecture.');" style="display: inline;">
+                                            <button type="submit" class="btn btn-danger btn-sm" style="padding: 6px 12px; border-radius: 8px; background: rgba(239, 68, 68, 0.1); color: var(--color-danger); border: none; font-size: 13px;">
+                                                <i data-lucide="trash-2" style="width: 14px; height: 14px;"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" style="padding: 40px; text-align: center; color: var(--color-text-muted);">
+                                No lectures registered for this course yet. Click "Add Lecture" to construct the syllabus curriculum.
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</section>
+
+<style>
+    tbody tr:hover {
+        background: rgba(248, 250, 252, 0.8);
+    }
+</style>
+{% endblock %}

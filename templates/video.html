@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}Watching: {{ lecture.title }} | Nexora{% endblock %}
+
+{% block content %}
+<div class="video-workspace">
+    
+    <!-- Left Column: Video Screen, Navigation, Tabs -->
+    <div class="video-player-container">
+        
+        <!-- Course Completion Banner -->
+        {% if progress_percent == 100 %}
+            <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 16px 24px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <i data-lucide="award" style="width:28px; height:28px;"></i>
+                    <div>
+                        <div style="font-weight:700; font-size:16px;">Congratulations! Course Completed!</div>
+                        <div style="font-size:13px; opacity:0.9;">You have finished 100% of {{ course.title }}. Download your verified certificate now.</div>
+                    </div>
+                </div>
+                <a href="{{ url_for('certificate', course_id=course.id) }}" class="btn btn-secondary btn-sm" style="background:#fff; color:#059669; font-weight:700; border:none; border-radius:8px; padding:8px 16px;">
+                    View Certificate <i data-lucide="external-link" style="width:14px;height:14px; margin-left:4px;"></i>
+                </a>
+            </div>
+        {% endif %}
+
+        <!-- Interactive Player Aspect Ratio Frame -->
+        <div class="video-frame-aspect">
+            {% set video_lower = lecture_video_url|lower %}
+            {% if video_lower.endswith('.mp4') or video_lower.endswith('.webm') or video_lower.endswith('.mov') or video_lower.endswith('.mkv') or video_lower.endswith('.avi') or video_lower.endswith('.ogg') %}
+                <video controls preload="metadata" style="width:100%; height:100%; background:#000; border-radius:16px;">
+                    <source src="{{ lecture_video_url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            {% else %}
+                <iframe src="{{ lecture_video_url }}?autoplay=0&rel=0&modestbranding=1" 
+                        title="{{ lecture.title }}" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                </iframe>
+            {% endif %}
+        </div>
+        
+        <!-- Video Header Info & Controls -->
+        <div class="video-info-box">
+            <div class="video-info-header">
+                <div>
+                    <h2 id="video-lecture-title">{{ lecture.title }}</h2>
+                    <p style="color:#94a3b8; font-size:14px; margin-top:4px;">
+                        Course: {{ course.title }} &bull; Lesson {{ lecture.order_num }}
+                    </p>
+                </div>
+                
+                <!-- Complete Toggle and Progression percentage -->
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+                    <label style="display:inline-flex; align-items:center; gap:8px; font-weight:600; font-size:14px; color:white; cursor:pointer;">
+                        <input type="checkbox" id="complete-checkbox" 
+                               data-lecture-id="{{ lecture.id }}" 
+                               data-course-slug="{{ course.slug }}"
+                               {% if is_completed %}checked{% endif %}
+                               style="accent-color:var(--color-primary); width:18px; height:18px;">
+                        <span>Mark completed</span>
+                    </label>
+                    <div style="font-size:12px; color:#94a3b8; display:flex; align-items:center; gap:6px;">
+                        <span>Course Progress:</span>
+                        <span class="progress-num" style="font-weight:700; color:var(--color-primary);">{{ progress_percent }}%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Video Prev/Next Navigation Controls -->
+            <div class="video-nav-buttons" style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.1);">
+                <div>
+                    {% if prev_lecture %}
+                        <a href="{{ url_for('learn', slug=course.slug, lecture_id=prev_lecture.id) }}" class="btn btn-secondary btn-sm" style="background-color:rgba(255,255,255,0.05); color:white; border-color:rgba(255,255,255,0.15);" id="btn-prev-lesson">
+                            <i data-lucide="chevron-left" style="width:16px;height:16px;"></i> Previous Lesson
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div style="display:flex; gap:10px;">
+                    <a href="{{ url_for('quiz', course_id=course.id) }}" class="btn btn-secondary btn-sm" style="background:rgba(99, 102, 241, 0.2); color:#a5b4fc; border:1px solid rgba(99, 102, 241, 0.4);">
+                        <i data-lucide="help-circle" style="width:16px;height:16px;"></i> Take Course Quiz
+                    </a>
+
+                    {% if next_lecture %}
+                        <a href="{{ url_for('learn', slug=course.slug, lecture_id=next_lecture.id) }}" class="btn btn-primary btn-sm" id="btn-next-lesson">
+                            Next Lesson <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Description, resources, notes, Q&A tabs -->
+            <div class="video-tabs" style="margin-top:24px;">
+                <button class="video-tab-btn active" data-tab="tab-overview">Overview</button>
+                <button class="video-tab-btn" data-tab="tab-resources">Resources</button>
+                <button class="video-tab-btn" data-tab="tab-notes">Personal Notes</button>
+                <button class="video-tab-btn" data-tab="tab-discussion">Discussion (Q&A)</button>
+            </div>
+            
+            <div class="video-tab-content">
+                <!-- Overview Pane -->
+                <div id="tab-overview" class="tab-pane active">
+                    <div style="font-size:15px; color:#cbd5e1; line-height:1.7;">
+                        <p>{{ lecture.description }}</p>
+                    </div>
+                </div>
+                
+                <!-- Resources Pane -->
+                <div id="tab-resources" class="tab-pane">
+                    <div style="font-size:14px; color:#cbd5e1;">
+                        <p style="margin-bottom:12px;">Download resources, cheat sheets, and source file templates referenced in this video lesson:</p>
+                        {% if lecture.resources %}
+                            <div style="background-color:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:16px; border-radius:8px;">
+                                {{ lecture.resources | replace('\n', '<br>') | safe }}
+                            </div>
+                        {% else %}
+                            <p style="color:#64748b;">No downloadable files are registered for this lesson.</p>
+                        {% endif %}
+                        <div style="margin-top:16px;">
+                            <a href="{{ url_for('materials') }}" class="btn btn-secondary btn-sm" style="color:white; border-color:rgba(255,255,255,0.2);">View All Platform Study Materials &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personal Notes Pane -->
+                <div id="tab-notes" class="tab-pane">
+                    <div style="font-size:14px; color:#cbd5e1;">
+                        <p style="margin-bottom:12px;">Take private notes while watching. Notes are automatically saved in your browser for this lesson.</p>
+                        <textarea id="lecture-notes-area" placeholder="Write your personal notes for this lesson here..." style="width:100%; height:140px; padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.3); color:#fff; font-family:inherit; resize:vertical; font-size:14px; margin-bottom:12px;"></textarea>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span id="notes-save-status" style="font-size:12px; color:#10b981;">Draft saved locally</span>
+                            <button class="btn btn-primary btn-sm" onclick="savePersonalNotes()">Save Notes</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Discussion Q&A Pane -->
+                <div id="tab-discussion" class="tab-pane">
+                    <div class="discussion-input-wrap">
+                        <textarea id="comment-textbox" placeholder="Ask a question or leave feedback about this lesson..."></textarea>
+                        <button class="btn btn-primary btn-sm" style="align-self:flex-end;" onclick="postComment()">
+                            Post Comment <i data-lucide="send" style="width:14px;height:14px;"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="comments-list" id="comments-box">
+                        {% if comments %}
+                            {% for c in comments %}
+                                <div class="comment-card">
+                                    <div class="comment-meta">
+                                        <span class="comment-author">{{ c.user.name }}</span>
+                                        <span>{{ c.created_at.strftime('%b %d, %Y %H:%M') if c.created_at else 'Just now' }}</span>
+                                    </div>
+                                    <div class="comment-body">
+                                        "{{ c.text }}"
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="comment-card" id="no-comments-msg">
+                                <p style="color:#64748b; font-size:13px; text-align:center;">No comments posted yet. Be the first to start the discussion!</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+    
+    <!-- Right Column: Interactive Course Lecture Playlist -->
+    <div class="video-playlist-sidebar">
+        <div class="playlist-header">
+            <h3>Course Playlist</h3>
+            <div style="font-size:12px; color:var(--color-text-muted);">
+                Completed: <span class="completed-count" style="font-weight:700; color:var(--color-success);">{{ progress_percent * lectures|length // 100 }}</span> / {{ lectures|length }} lessons
+            </div>
+            <!-- Progress Bar inside Playlist sidebar -->
+            <div class="progress-container" style="height:6px; margin-top:12px; margin-bottom:0;">
+                <div class="progress-bar" style="width: {{ progress_percent }}%;"></div>
+            </div>
+        </div>
+        
+        <div class="playlist-items">
+            {% for item in lectures %}
+                <button class="playlist-item-btn {% if item.id == lecture.id %}active{% endif %} {% if item.id in completed_lecture_ids %}completed{% endif %}" 
+                        data-lecture-id="{{ item.id }}"
+                        onclick="window.location.href='{{ url_for('learn', slug=course.slug, lecture_id=item.id) }}'">
+                    <div class="playlist-item-status-icon">
+                        {% if item.id in completed_lecture_ids %}
+                            <i data-lucide="check" style="width:12px;height:12px;"></i>
+                        {% endif %}
+                    </div>
+                    <div class="playlist-item-info">
+                        <div class="playlist-item-title">{{ item.title }}</div>
+                        <div class="playlist-item-meta">
+                            <span>Lesson {{ item.order_num }}</span> &bull; 
+                            <span>{{ item.duration }}</span>
+                        </div>
+                    </div>
+                </button>
+            {% endfor %}
+        </div>
+    </div>
+    
+</div>
+
+<script>
+// Personal Notes auto-load and save in localStorage
+const noteKey = "nexora_note_lecture_{{ lecture.id }}";
+document.addEventListener("DOMContentLoaded", () => {
+    const saved = localStorage.getItem(noteKey);
+    if (saved) {
+        document.getElementById("lecture-notes-area").value = saved;
+    }
+});
+
+function savePersonalNotes() {
+    const text = document.getElementById("lecture-notes-area").value;
+    localStorage.setItem(noteKey, text);
+    const status = document.getElementById("notes-save-status");
+    status.textContent = "Notes saved successfully!";
+    setTimeout(() => { status.textContent = "Draft saved locally"; }, 2500);
+}
+
+// Post comment to backend API
+function postComment() {
+    const commentText = document.getElementById('comment-textbox').value.trim();
+    if (!commentText) return;
+
+    fetch('/api/comments/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            lecture_id: {{ lecture.id }},
+            text: commentText
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const commentsBox = document.getElementById('comments-box');
+            const noMsg = document.getElementById('no-comments-msg');
+            if (noMsg) noMsg.remove();
+
+            const newCard = document.createElement('div');
+            newCard.className = 'comment-card';
+            newCard.innerHTML = `
+                <div class="comment-meta">
+                    <span class="comment-author">${data.author}</span>
+                    <span>Just now</span>
+                </div>
+                <div class="comment-body">
+                    "${commentText}"
+                </div>
+            `;
+            commentsBox.insertBefore(newCard, commentsBox.firstChild);
+            document.getElementById('comment-textbox').value = '';
+        } else {
+            alert(data.error || 'Failed to post comment');
+        }
+    })
+    .catch(err => {
+        console.error('Error posting comment:', err);
+    });
+}
+</script>
+{% endblock %}

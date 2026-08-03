@@ -1,0 +1,22 @@
+databases:
+  - name: nexoradb
+    databaseName: nexora_db
+    user: nexora_user
+    plan: free
+
+services:
+  - type: web
+    name: learning-portal
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        value: CHANGE_ME_TO_A_SECURE_VALUE
+      - key: DATABASE_URL
+        fromDatabase:
+          name: nexoradb
+          property: connectionString

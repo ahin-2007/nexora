@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Sign In | Nexora{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="hero-bg-blobs">
+        <div class="blob blob-1" style="background: var(--color-primary);"></div>
+        <div class="blob blob-2" style="background: var(--color-secondary);"></div>
+    </div>
+    
+    <div class="glass-card auth-card" style="border-top: 4px solid var(--color-primary);">
+        <div class="auth-header">
+            <h2 style="display: inline-flex; align-items: center; gap: 8px; justify-content: center;">
+                <i data-lucide="shield-check" style="color: var(--color-primary); width: 28px; height: 28px;"></i>
+                Admin Portal
+            </h2>
+            <p style="margin-top: 8px;">Sign in to access course management and resources.</p>
+        </div>
+        
+        <form class="auth-form" action="{{ url_for('admin_login', next=next) }}" method="POST">
+            <div class="form-group">
+                <label for="email">Admin Email Address</label>
+                <div class="form-control-wrap">
+                    <i data-lucide="mail" style="width:16px;height:16px;"></i>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="admin@nexora.com" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="form-control-wrap">
+                    <i data-lucide="lock" style="width:16px;height:16px;"></i>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter admin password" required>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="margin-top:12px; background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));" id="login-submit-btn">
+                Secure Sign In <i data-lucide="shield-alert" style="width:18px;height:18px;"></i>
+            </button>
+        </form>
+        
+        <div class="auth-footer-text" style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--color-border);">
+            Are you a student? <a href="{{ url_for('login') }}" style="color: var(--color-primary); font-weight: 600;">Student Login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

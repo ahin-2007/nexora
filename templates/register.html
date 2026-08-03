@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up | Nexora{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="hero-bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+    
+    <div class="glass-card auth-card">
+        <div class="auth-header">
+            <h2>Create Account</h2>
+            <p>Start your software engineering journey with Nexora today.</p>
+        </div>
+        
+        <form class="auth-form" action="{{ url_for('register') }}" method="POST">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <div class="form-control-wrap">
+                    <i data-lucide="user" style="width:16px;height:16px;"></i>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="John Doe" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <div class="form-control-wrap">
+                    <i data-lucide="mail" style="width:16px;height:16px;"></i>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="john@example.com" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="form-control-wrap">
+                    <i data-lucide="lock" style="width:16px;height:16px;"></i>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="Create a secure password" minlength="6" required>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="margin-top:12px;" id="register-submit-btn">
+                Sign Up <i data-lucide="user-plus" style="width:18px;height:18px;"></i>
+            </button>
+        </form>
+        
+        <div class="auth-footer-text">
+            Already have an account? <a href="{{ url_for('login') }}">Sign In</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

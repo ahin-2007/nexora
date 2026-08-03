@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Nexora{% endblock %}
+
+{% block content %}
+<!-- Dashboard Hero Overview -->
+<section class="dashboard-hero">
+    <div class="container dashboard-hero-content">
+        <div class="dashboard-hero-title">
+            <h1>Welcome back, {{ g.user.name }}!</h1>
+            <p>Track your technical learning metrics, courses, and certifications here.</p>
+        </div>
+        
+        <div class="dashboard-stats">
+            <div class="dashboard-stat-pill">
+                <div style="background-color:var(--color-primary-light); color:var(--color-primary); width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="book-open"></i>
+                </div>
+                <div>
+                    <div class="dashboard-stat-val">{{ courses_enrolled }}</div>
+                    <div class="dashboard-stat-lbl">Enrolled</div>
+                </div>
+            </div>
+            
+            <div class="dashboard-stat-pill">
+                <div style="background-color:rgba(16, 185, 129, 0.1); color:var(--color-success); width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="check-circle2"></i>
+                </div>
+                <div>
+                    <div class="dashboard-stat-val">{{ courses_completed }}</div>
+                    <div class="dashboard-stat-lbl">Completed</div>
+                </div>
+            </div>
+            
+            <div class="dashboard-stat-pill">
+                <div style="background-color:var(--color-accent-light); color:var(--color-accent); width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center;">
+                    <i data-lucide="play-circle"></i>
+                </div>
+                <div>
+                    <div class="dashboard-stat-val">{{ total_completed_lessons }}</div>
+                    <div class="dashboard-stat-lbl">Lessons Done</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Active course checklist grid -->
+<section class="container dashboard-workspace">
+    <h2 class="dashboard-section-title">My Learning Dashboard</h2>
+    
+    <div class="dashboard-enrollments-grid">
+        {% if enrollments %}
+            {% for enrollment in enrollments %}
+                {% set course = enrollment.course %}
+                <div class="glass-card enrollment-card" onclick="window.location.href='{{ url_for('learn_intro', slug=course.slug) }}'" style="cursor:pointer;">
+                    
+                    <!-- Dynamic gradient visual indicator -->
+                    <div class="enrollment-visual" style="background: linear-gradient(135deg, {{ course.gradient_start }}, {{ course.gradient_end }})">
+                        <i data-lucide="code" style="width:32px;height:32px;"></i>
+                    </div>
+                    
+                    <div class="enrollment-info">
+                        <div>
+                            <span class="enrollment-cat">{{ course.category }}</span>
+                            <h3 class="enrollment-title">{{ course.title }}</h3>
+                        </div>
+                        
+                        <!-- Progress trackers -->
+                        <div style="margin-bottom:16px;">
+                            <div class="progress-text-wrap">
+                                <span>Progress</span>
+                                <span class="progress-num">{{ progress_map[enrollment.id] }}%</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: {{ progress_map[enrollment.id] }}%;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="enrollment-footer">
+                            <span style="font-size:12px; color:var(--color-text-muted);">
+                                {% if enrollment.completed %}
+                                    <span style="color:var(--color-success); font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+                                        <i data-lucide="check-circle" style="width:14px;height:14px;"></i> Completed
+                                    </span>
+                                {% else %}
+                                    In progress &bull; {{ course.difficulty }}
+                                {% endif %}
+                            </span>
+                            
+                            <a href="{{ url_for('learn_intro', slug=course.slug) }}" class="btn btn-primary btn-sm" onclick="event.stopPropagation();">
+                                {% if enrollment.completed %}Watch again{% else %}Resume learning{% endif %} 
+                                <i data-lucide="arrow-right" style="width:14px;height:14px;margin-left:4px;"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                </div>
+            {% endfor %}
+        {% else %}
+            <!-- Dashboard Empty State -->
+            <div class="glass-card empty-state" style="background:rgba(255,255,255,0.5);">
+                <i data-lucide="book-marked" style="width:64px;height:64px;color:var(--color-text-muted);"></i>
+                <h3>No Registered Courses</h3>
+                <p>You haven't enrolled in any courses yet. Explore our technical programs and kickstart your coding career.</p>
+                <a href="{{ url_for('courses') }}" class="btn btn-primary" id="btn-explore-empty">Explore Courses <i data-lucide="search" style="width:16px;height:16px;"></i></a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}{% if lecture %}Edit Lecture: {{ lecture.title }}{% else %}Add Lecture{% endif %} | Nexora{% endblock %}
+
+{% block content %}
+<section style="padding: 60px 0 100px 0;">
+    <div class="container" style="max-width: 800px;">
+        
+        <!-- Breadcrumbs -->
+        <div style="margin-bottom: 24px;">
+            <a href="{{ url_for('admin_course_lectures', course_id=course.id) }}" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--color-text-muted); font-size: 14px;">
+                <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i> Back to Curriculum Builder
+            </a>
+        </div>
+
+        <div class="glass-card" style="padding: 40px; border-radius: 20px;">
+            <h2 style="font-size: 28px; font-weight: 800; margin-bottom: 8px;">
+                {% if lecture %}Edit Lecture Details{% else %}Add Lecture to Course{% endif %}
+            </h2>
+            <p style="color: var(--color-text-muted); margin-bottom: 32px;">
+                Course: <strong style="color: var(--color-text-title);">{{ course.title }}</strong>
+            </p>
+
+            <form action="{% if lecture %}{{ url_for('admin_lecture_edit', course_id=course.id, lecture_id=lecture.id) }}{% else %}{{ url_for('admin_lecture_create', course_id=course.id) }}{% endif %}" method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 24px;">
+                
+                <!-- Title & Order -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div class="form-group">
+                        <label for="title" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Lecture Title</label>
+                        <input type="text" id="title" name="title" required value="{{ lecture.title if lecture else '' }}" placeholder="e.g. Introduction to CSS Flexbox" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="order_num" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Order Position</label>
+                        <input type="number" min="1" id="order_num" name="order_num" required value="{{ lecture.order_num if lecture else next_order_num }}" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                    </div>
+                </div>
+
+                <!-- Video URL / Upload & Duration -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div class="form-group">
+                        <label for="video_file" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Upload video file</label>
+                        <input type="file" id="video_file" name="video_file" accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-matroska" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                        <p style="margin-top: 8px; font-size: 13px; color: var(--color-text-muted);">Or paste an external video URL below.</p>
+                        <input type="text" id="video_url" name="video_url" value="{{ lecture.video_url if lecture and lecture.video_url and not lecture.video_url.startswith('/static/uploads/videos/') else '' }}" placeholder="e.g. https://www.youtube.com/embed/dQw4w9WgXcQ" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px; margin-top: 8px;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="duration" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Duration</label>
+                        <input type="text" id="duration" name="duration" required value="{{ lecture.duration if lecture else '' }}" placeholder="e.g. 12:45" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label for="description" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Lecture Summary / Description</label>
+                    <textarea id="description" name="description" rows="3" placeholder="Provide a brief synopsis of what will be explained in this lesson video..." style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px; font-family: inherit; resize: vertical;">{{ lecture.description if lecture else '' }}</textarea>
+                </div>
+
+                <!-- Resources Markdown -->
+                <div class="form-group">
+                    <label for="resources" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Reference Resources (Markdown bullet list)</label>
+                    <textarea id="resources" name="resources" rows="4" placeholder="* [MDN Documentation](https://developer.mozilla.org)&#10;* [Download source code archive](https://github.com/example/repo)" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px; font-family: monospace; resize: vertical;">{{ lecture.resources if lecture else '' }}</textarea>
+                </div>
+
+                <!-- Actions -->
+                <div style="display: flex; justify-content: flex-end; gap: 16px; margin-top: 12px; border-top: 1px solid var(--color-border); padding-top: 24px;">
+                    <a href="{{ url_for('admin_course_lectures', course_id=course.id) }}" class="btn btn-secondary" style="border: 1px solid var(--color-border); background: none;">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        {% if lecture %}Save Lecture{% else %}Add Lecture{% endif %}
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

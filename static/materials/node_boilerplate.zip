@@ -1,0 +1,3 @@
+Nexora Learning Portal - Node.js REST API Boilerplate ZIP
+Format: ZIP Archive
+Source code repository zip containing app.js, package.json, routes/api.js, models/User.js, controllers/authController.js, config/db.js, and package dependency locks.

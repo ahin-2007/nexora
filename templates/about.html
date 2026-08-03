@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}About Us | Nexora Online Learning Platform{% endblock %}
+
+{% block content %}
+<!-- About Hero -->
+<section class="about-hero">
+    <div class="container">
+        <h1>Mastering Technology Together</h1>
+        <p>Nexora is built by industry professionals to deliver high-fidelity, code-oriented learning structures for developers and designers globally.</p>
+    </div>
+</section>
+
+<!-- Our Story Section -->
+<section class="about-story-section">
+    <div class="container about-grid">
+        <div class="about-img-frame">
+            <!-- Represented by CSS styling frame -->
+        </div>
+        
+        <div class="about-content">
+            <h2>The Vision Behind Nexora</h2>
+            <p>Traditional learning structures often suffer from bloated curricula, lack of structured progress, and confusing setups. Nexora was created to provide a streamlined, beautiful workspace where learners can watch high-quality tutorials, download necessary coding resources, and track their progression in real-time.</p>
+            <p>Our platform focuses specifically on highly sought-after computer skills including Web Development, Javascript frameworks, Python OOP logic, SQL databases, AI methodologies, and network cybersecurity.</p>
+            <div style="margin-top:32px;">
+                <a href="{{ url_for('courses') }}" class="btn btn-primary">Start Learning Now <i data-lucide="arrow-right" style="width:16px;height:16px;"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Values Section -->
+<section class="values-section" style="padding:80px 0; background-color:rgba(226, 232, 240, 0.2); border-top:1px solid var(--color-border); border-bottom:1px solid var(--color-border);">
+    <div class="container">
+        <div style="text-align:center; max-width:600px; margin:0 auto 60px auto;">
+            <h2 style="font-size:32px; font-weight:800; margin-bottom:16px;">Our Core Principles</h2>
+            <p style="color:var(--color-text-muted);">The values that drive how we build courses, manage resources, and support students.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="glass-card feature-card" style="background-color:white;">
+                <div class="feature-icon-box" style="background-color:var(--color-primary-light); color:var(--color-primary);">
+                    <i data-lucide="compass" style="width:28px;height:28px;"></i>
+                </div>
+                <h3>Clarity Over Clutter</h3>
+                <p>We break down complex technical topics into step-by-step videos and structured curriculums that flow logically.</p>
+            </div>
+            
+            <div class="glass-card feature-card" style="background-color:white;">
+                <div class="feature-icon-box" style="background-color:var(--color-accent-light); color:var(--color-accent);">
+                    <i data-lucide="cpu" style="width:28px;height:28px;"></i>
+                </div>
+                <h3>Hands-On Coding</h3>
+                <p>We supply downloadable start-to-finish source code files and cheat sheets with every course lesson.</p>
+            </div>
+            
+            <div class="glass-card feature-card" style="background-color:white;">
+                <div class="feature-icon-box" style="background-color:rgba(16, 185, 129, 0.1); color:var(--color-success);">
+                    <i data-lucide="users" style="width:28px;height:28px;"></i>
+                </div>
+                <h3>Inclusive Access</h3>
+                <p>All core development languages are taught via free courses, making entry into software engineering accessible to everyone.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="team-section">
+    <div class="container">
+        <div style="text-align:center; max-width:600px; margin:0 auto 40px auto;">
+            <h2 style="font-size:32px; font-weight:800; margin-bottom:16px;">Meet Our Educators</h2>
+            <p style="color:var(--color-text-muted);">Experienced developers, designers, and engineers dedicated to your professional growth.</p>
+        </div>
+        
+        <div class="team-grid">
+            <div class="glass-card team-card">
+                <div class="team-avatar">SH</div>
+                <h4>Sarah Jenkins</h4>
+                <div class="role">Lead Web Developer & Founder</div>
+                <p>Former Senior Engineer at Google. Sarah specializes in CSS Grid, responsive animations, and building modern React apps.</p>
+            </div>
+            
+            <div class="glass-card team-card">
+                <div class="team-avatar" style="background: linear-gradient(135deg, var(--color-accent-light), var(--color-accent));">DR</div>
+                <h4>David Ross</h4>
+                <div class="role">Python & AI Instructor</div>
+                <p>Data Architect with 8+ years experience. David instructs OOP concepts, Machine Learning modules, and SQL structures.</p>
+            </div>
+            
+            <div class="glass-card team-card">
+                <div class="team-avatar" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), #ef4444);">AM</div>
+                <h4>Alex Martinez</h4>
+                <div class="role">Cybersecurity Consultant</div>
+                <p>Certified Ethical Hacker and infrastructure consultant. Alex handles server configurations, secure headers, and cryptography.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

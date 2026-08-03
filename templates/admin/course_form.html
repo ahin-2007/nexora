@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}{% if course %}Edit Course: {{ course.title }}{% else %}Create New Course{% endif %} | Nexora{% endblock %}
+
+{% block content %}
+<section style="padding: 60px 0 100px 0;">
+    <div class="container" style="max-width: 800px;">
+        
+        <!-- Breadcrumb / Back Navigation -->
+        <div style="margin-bottom: 24px;">
+            <a href="{{ url_for('admin_dashboard') }}" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--color-text-muted); font-size: 14px;">
+                <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i> Back to Admin Dashboard
+            </a>
+        </div>
+
+        <div class="glass-card" style="padding: 40px; border-radius: 20px;">
+            <h2 style="font-size: 28px; font-weight: 800; margin-bottom: 8px;">
+                {% if course %}Edit Course Details{% else %}Create A New Course{% endif %}
+            </h2>
+            <p style="color: var(--color-text-muted); margin-bottom: 32px;">
+                {% if course %}Update the descriptive parameters, difficulty, and pricing for this course.{% else %}Initialize a brand new technical training curriculum.{% endif %}
+            </p>
+
+            <form action="{% if course %}{{ url_for('admin_course_edit', course_id=course.id) }}{% else %}{{ url_for('admin_course_create') }}{% endif %}" method="POST" style="display: flex; flex-direction: column; gap: 24px;">
+                
+                <!-- Title & Slug -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                    <div class="form-group">
+                        <label for="title" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Course Title</label>
+                        <input type="text" id="title" name="title" required value="{{ course.title if course else '' }}" placeholder="e.g. Master React Hooks" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;" oninput="generateSlug(this.value)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="slug" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Course Slug (URL identifier)</label>
+                        <input type="text" id="slug" name="slug" required value="{{ course.slug if course else '' }}" placeholder="e.g. master-react-hooks" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label for="description" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Course Description</label>
+                    <textarea id="description" name="description" required rows="4" placeholder="Describe what the student will learn in this course..." style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px; font-family: inherit; resize: vertical;">{{ course.description if course else '' }}</textarea>
+                </div>
+
+                <!-- Category, Difficulty, Duration -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div class="form-group">
+                        <label for="category" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Category</label>
+                        <input list="category-options" id="category" name="category" required value="{{ course.category if course else '' }}" placeholder="Enter or select a category" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                        <datalist id="category-options">
+                            <option value="Web Development"></option>
+                            <option value="Programming"></option>
+                            <option value="Design"></option>
+                            <option value="AI & Data"></option>
+                        </datalist>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="difficulty" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Difficulty Level</label>
+                        <select id="difficulty" name="difficulty" required style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                            <option value="Beginner" {% if course and course.difficulty == 'Beginner' %}selected{% endif %}>Beginner</option>
+                            <option value="Intermediate" {% if course and course.difficulty == 'Intermediate' %}selected{% endif %}>Intermediate</option>
+                            <option value="Advanced" {% if course and course.difficulty == 'Advanced' %}selected{% endif %}>Advanced</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="duration" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Duration</label>
+                        <input type="text" id="duration" name="duration" required value="{{ course.duration if course else '' }}" placeholder="e.g. 10h 45m" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                    </div>
+                </div>
+
+                <!-- Instructor & Price -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div class="form-group">
+                        <label for="instructor" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Lead Instructor</label>
+                        <input type="text" id="instructor" name="instructor" required value="{{ course.instructor if course else 'Nexora Academy' }}" placeholder="e.g. Emma Watson" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Price (₹ / INR)</label>
+                        <input type="number" step="0.01" min="0" id="price" name="price" required value="{{ course.price if course else 0.0 }}" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                    </div>
+                </div>
+
+                <!-- Gradient Colors (Indigo -> Violet defaults) -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                    <div class="form-group">
+                        <label for="gradient_start" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Gradient Start Hex</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <input type="color" id="gradient_start_picker" value="{{ course.gradient_start if course else '#4f46e5' }}" style="border: none; background: none; width: 42px; height: 42px; cursor: pointer;" oninput="document.getElementById('gradient_start').value = this.value">
+                            <input type="text" id="gradient_start" name="gradient_start" required value="{{ course.gradient_start if course else '#4f46e5' }}" placeholder="#4f46e5" pattern="^#[0-9a-fA-F]{6}$" style="flex-grow: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;" oninput="document.getElementById('gradient_start_picker').value = this.value">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gradient_end" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Gradient End Hex</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <input type="color" id="gradient_end_picker" value="{{ course.gradient_end if course else '#7c3aed' }}" style="border: none; background: none; width: 42px; height: 42px; cursor: pointer;" oninput="document.getElementById('gradient_end').value = this.value">
+                            <input type="text" id="gradient_end" name="gradient_end" required value="{{ course.gradient_end if course else '#7c3aed' }}" placeholder="#7c3aed" pattern="^#[0-9a-fA-F]{6}$" style="flex-grow: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;" oninput="document.getElementById('gradient_end_picker').value = this.value">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skills Covered & Requirements -->
+                <div class="form-group">
+                    <label for="skills" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Skills Covered (Comma-separated)</label>
+                    <input type="text" id="skills" name="skills" value="{{ course.skills if course else '' }}" placeholder="React Hooks, State Management, Custom Hooks" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                </div>
+
+                <div class="form-group">
+                    <label for="requirements" style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px;">Requirements (Comma-separated)</label>
+                    <input type="text" id="requirements" name="requirements" value="{{ course.requirements if course else '' }}" placeholder="Basic HTML/CSS, Intermediate JavaScript" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-bg-base); font-size: 15px;">
+                </div>
+
+                <!-- Submit and Cancel -->
+                <div style="display: flex; justify-content: flex-end; gap: 16px; margin-top: 12px; border-top: 1px solid var(--color-border); padding-top: 24px;">
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary" style="border: 1px solid var(--color-border); background: none;">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        {% if course %}Save Changes{% else %}Create Course{% endif %}
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</section>
+
+<script>
+    function generateSlug(title) {
+        // Only auto-generate slug if we are creating a new course (i.e. course is not defined/no ID on input slug value)
+        {% if not course %}
+        const slug = title
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w\s-]/g, '') // remove non-alphanumeric except spaces/hyphens
+            .replace(/[\s_-]+/g, '-') // replace spaces/underscores with hyphens
+            .replace(/^-+|-+$/g, ''); // trim leading/trailing hyphens
+        document.getElementById('slug').value = slug;
+        {% endif %}
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Nexora | Online Learning Platform{% endblock %}</title>
+    <meta name="description" content="Nexora is a modern online learning platform designed to master computer-related skills, including Web Development, Programming, UI/UX Design, and AI.">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Load Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Load Chart.js CDN for progress visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- SVG Gradient Definition for Logo Icon -->
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+        <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#4f46e5" />
+            <stop offset="100%" stop-color="#7c3aed" />
+        </linearGradient>
+    </svg>
+
+    <!-- Global Alerts (Toast notification alerts) -->
+    <div class="toast-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="toast toast-{{ category if category != 'error' else 'danger' }}">
+                        {% if category == 'success' %}
+                            <i data-lucide="check-circle"></i>
+                        {% elif category == 'warning' %}
+                            <i data-lucide="alert-triangle"></i>
+                        {% elif category == 'danger' or category == 'error' %}
+                            <i data-lucide="x-circle"></i>
+                        {% else %}
+                            <i data-lucide="info"></i>
+                        {% endif %}
+                        <span>{{ message }}</span>
+                        <button class="toast-close"><i data-lucide="x"></i></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="app-header">
+        <div class="container navbar">
+            <a href="{{ url_for('home') }}" class="logo" id="brand-logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-10 9h3v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8h3L12 3z"/><path d="M9 22V12h6v10"/></svg>
+                Nexora
+            </a>
+            
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="{{ url_for('home') }}" class="nav-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
+                    <li><a href="{{ url_for('courses') }}" class="nav-link {% if request.path.startswith('/courses') or request.path.startswith('/course') %}active{% endif %}">Courses</a></li>
+                    <li><a href="{{ url_for('materials') }}" class="nav-link {% if request.path.startswith('/materials') %}active{% endif %}">Study Materials</a></li>
+                    {% if g.user %}
+                        {% if g.user.email == 'admin@nexora.com' %}
+                            <li><a href="{{ url_for('admin_dashboard') }}" class="nav-link {% if request.path.startswith('/admin') %}active{% endif %}">Admin Portal</a></li>
+                        {% endif %}
+                        <li><a href="{{ url_for('dashboard') }}" class="nav-link {% if request.path.startswith('/dashboard') %}active{% endif %}">Progress</a></li>
+                        <li><a href="{{ url_for('profile') }}" class="nav-link {% if request.path.startswith('/profile') %}active{% endif %}">Profile</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('about') }}" class="nav-link {% if request.path == '/about' %}active{% endif %}">About Us</a></li>
+                    <li class="mobile-actions">
+                        {% if g.user %}
+                            <a href="{{ url_for('profile') }}" class="user-pill" style="display:inline-flex; align-items:center; gap:8px; text-decoration:none; color:var(--color-text-title); font-weight:600; font-size:14px; margin-bottom:16px;">
+                                <img src="{{ g.user.avatar_url or 'https://ui-avatars.com/api/?name=' + g.user.name + '&background=4f46e5&color=fff' }}" alt="{{ g.user.name }}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; border:2px solid var(--color-primary);">
+                                <span>{{ g.user.name }}</span>
+                            </a>
+                            <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm" style="width:100%; justify-content:center;"><i data-lucide="log-out" style="width:16px; height:16px;"></i> Log Out</a>
+                        {% else %}
+                            <a href="{{ url_for('login') }}" class="btn btn-text btn-sm" style="width:100%; justify-content:center; margin-bottom:8px;">Sign In</a>
+                            <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm" style="width:100%; justify-content:center;">Sign Up</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="nav-actions">
+                {% if g.user %}
+                    <a href="{{ url_for('profile') }}" class="user-pill" style="display:inline-flex; align-items:center; gap:8px; text-decoration:none; color:var(--color-text-title); font-weight:600; font-size:14px; margin-right:12px;">
+                        <img src="{{ g.user.avatar_url or 'https://ui-avatars.com/api/?name=' + g.user.name + '&background=4f46e5&color=fff' }}" alt="{{ g.user.name }}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; border:2px solid var(--color-primary);">
+                        <span>{{ g.user.name.split(' ')[0] }}</span>
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm" id="nav-logout-btn"><i data-lucide="log-out" style="width:16px; height:16px;"></i> Log Out</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-text btn-sm" id="nav-signin-btn">Sign In</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm" id="nav-signup-btn">Sign Up</a>
+                {% endif %}
+            </div>
+            
+            <button class="menu-toggle" aria-label="Toggle navigation menu">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Dynamic Content Workspace -->
+    <main style="flex-grow:1;">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Platform Footer -->
+    <footer class="app-footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <a href="{{ url_for('home') }}" class="logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-10 9h3v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8h3L12 3z"/><path d="M9 22V12h6v10"/></svg>
+                    Nexora
+                </a>
+                <p>Empowering learners globally to master programming, development, and computer skills with state-of-the-art curriculum courses.</p>
+            </div>
+            
+            <div class="footer-links-col">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="{{ url_for('courses') }}">Explore Courses</a></li>
+                    <li><a href="{{ url_for('about') }}">About Platform</a></li>
+                    <li><a href="{{ url_for('home') }}#features">Platform Features</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links-col">
+                <h4>Popular Fields</h4>
+                <ul>
+                    <li><a href="{{ url_for('courses', category='Web Development') }}">Web Development</a></li>
+                    <li><a href="{{ url_for('courses', category='Programming') }}">Programming</a></li>
+                    <li><a href="{{ url_for('courses', category='AI & Data') }}">AI & Data Science</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-links-col">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Terms & Privacy</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="container footer-bottom">
+            <p>&copy; 2026 Nexora Learning Portal. All rights reserved.</p>
+            <div style="display:flex; gap:16px;">
+                <a href="#"><i data-lucide="twitter" style="width:18px;height:18px;"></i></a>
+                <a href="#"><i data-lucide="github" style="width:18px;height:18px;"></i></a>
+                <a href="#"><i data-lucide="linkedin" style="width:18px;height:18px;"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Import Main JS script -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

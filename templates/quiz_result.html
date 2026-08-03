@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz Results | Nexora{% endblock %}
+
+{% block content %}
+<section style="padding: 60px 0 100px 0;">
+    <div class="container" style="max-width:700px;">
+        
+        <div class="glass-card animate-fade-in" style="padding:40px; border-radius:24px; text-align:center; position:relative;">
+            
+            {% if passed %}
+                <div style="width:80px; height:80px; background:rgba(16, 185, 129, 0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px auto;">
+                    <i data-lucide="award" style="width:44px; height:44px; color:#10b981;"></i>
+                </div>
+                <span style="background:rgba(16, 185, 129, 0.2); color:#10b981; font-weight:700; padding:6px 16px; border-radius:20px; font-size:14px; text-transform:uppercase; letter-spacing:1px;">Quiz Passed!</span>
+                <h1 style="font-size:28px; font-weight:800; color:var(--color-text-title); margin-top:16px;">Congratulations!</h1>
+                <p style="color:var(--color-text-muted); font-size:15px; margin-bottom:32px;">You successfully cleared the assessment for <strong>{{ course.title }}</strong>.</p>
+            {% else %}
+                <div style="width:80px; height:80px; background:rgba(239, 68, 68, 0.15); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 20px auto;">
+                    <i data-lucide="x-circle" style="width:44px; height:44px; color:#ef4444;"></i>
+                </div>
+                <span style="background:rgba(239, 68, 68, 0.2); color:#ef4444; font-weight:700; padding:6px 16px; border-radius:20px; font-size:14px; text-transform:uppercase; letter-spacing:1px;">Needs Improvement</span>
+                <h1 style="font-size:28px; font-weight:800; color:var(--color-text-title); margin-top:16px;">Keep Practicing!</h1>
+                <p style="color:var(--color-text-muted); font-size:15px; margin-bottom:32px;">You fell short of the 70% passing threshold for <strong>{{ course.title }}</strong>.</p>
+            {% endif %}
+
+            <!-- Score breakdown grid -->
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-bottom:36px; background:var(--color-bg-alt); padding:20px; border-radius:16px; border:1px solid var(--color-border);">
+                <div>
+                    <div style="font-size:12px; color:var(--color-text-muted); font-weight:600; text-transform:uppercase;">Score</div>
+                    <div style="font-size:24px; font-weight:800; color:var(--color-text-title); margin-top:4px;">{{ score }} / {{ total }}</div>
+                </div>
+
+                <div>
+                    <div style="font-size:12px; color:var(--color-text-muted); font-weight:600; text-transform:uppercase;">Percentage</div>
+                    <div style="font-size:24px; font-weight:800; color:var(--color-primary); margin-top:4px;">{{ percentage }}%</div>
+                </div>
+
+                <div>
+                    <div style="font-size:12px; color:var(--color-text-muted); font-weight:600; text-transform:uppercase;">Result</div>
+                    <div style="font-size:20px; font-weight:800; color:{% if passed %}#10b981{% else %}#ef4444{% endif %}; margin-top:4px;">
+                        {% if passed %}PASS{% else %}FAIL{% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Answer Breakdown -->
+            <div style="text-align:left; margin-bottom:32px;">
+                <h3 style="font-size:18px; font-weight:700; margin-bottom:16px; color:var(--color-text-title);">Question Review</h3>
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    {% for r in results %}
+                        <div style="padding:16px; border-radius:12px; background:var(--color-bg-alt); border:1px solid {% if r.is_correct %}rgba(16,185,129,0.3){% else %}rgba(239,68,68,0.3){% endif %};">
+                            <div style="font-weight:600; font-size:14px; color:var(--color-text-title); margin-bottom:8px; display:flex; align-items:center; gap:8px;">
+                                {% if r.is_correct %}
+                                    <i data-lucide="check-circle" style="width:18px; height:18px; color:#10b981;"></i>
+                                {% else %}
+                                    <i data-lucide="x-circle" style="width:18px; height:18px; color:#ef4444;"></i>
+                                {% endif %}
+                                {{ r.question.question_text }}
+                            </div>
+                            <div style="font-size:13px; color:var(--color-text-muted); display:flex; gap:16px;">
+                                <span>Your Answer: <strong style="color:{% if r.is_correct %}#10b981{% else %}#ef4444{% endif %};">{{ r.user_answer }}</strong></span>
+                                <span>Correct Answer: <strong style="color:#10b981;">{{ r.correct_answer }}</strong></span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div style="display:flex; gap:16px; justify-content:center;">
+                <a href="{{ url_for('quiz', course_id=course.id) }}" class="btn btn-secondary" style="border-radius:10px;">
+                    <i data-lucide="rotate-ccw" style="width:16px; height:16px; margin-right:6px;"></i> Retake Quiz
+                </a>
+                <a href="{{ url_for('learn_intro', slug=course.slug) }}" class="btn btn-primary" style="border-radius:10px;">
+                    Back to Course <i data-lucide="arrow-right" style="width:16px; height:16px; margin-left:6px;"></i>
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+{% endblock %}

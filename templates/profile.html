@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - Nexora{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:900px; margin:60px auto; padding:20px;">
+    <div class="glass-card" style="padding:40px; border-radius:12px;">
+        <h1 style="margin-bottom:30px; color:var(--color-text-title);">My Profile</h1>
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-bottom:40px;">
+            <div>
+                <label style="display:block; font-weight:600; margin-bottom:8px; color:var(--color-text-title);">Name</label>
+                <p style="padding:12px; background:rgba(255,255,255,0.05); border-radius:8px; color:var(--color-text-body);">{{ user.name }}</p>
+            </div>
+            
+            <div>
+                <label style="display:block; font-weight:600; margin-bottom:8px; color:var(--color-text-title);">Email</label>
+                <p style="padding:12px; background:rgba(255,255,255,0.05); border-radius:8px; color:var(--color-text-body);">{{ user.email }}</p>
+            </div>
+            
+            <div>
+                <label style="display:block; font-weight:600; margin-bottom:8px; color:var(--color-text-title);">Phone</label>
+                <p style="padding:12px; background:rgba(255,255,255,0.05); border-radius:8px; color:var(--color-text-body);">{{ user.phone or 'Not provided' }}</p>
+            </div>
+            
+            <div>
+                <label style="display:block; font-weight:600; margin-bottom:8px; color:var(--color-text-title);">Headline</label>
+                <p style="padding:12px; background:rgba(255,255,255,0.05); border-radius:8px; color:var(--color-text-body);">{{ user.headline or 'Not provided' }}</p>
+            </div>
+        </div>
+        
+        <div style="margin-bottom:30px;">
+            <label style="display:block; font-weight:600; margin-bottom:8px; color:var(--color-text-title);">Bio</label>
+            <p style="padding:12px; background:rgba(255,255,255,0.05); border-radius:8px; color:var(--color-text-body); line-height:1.6;">{{ user.bio or 'No bio provided' }}</p>
+        </div>
+        
+        <div style="padding-top:20px; border-top:1px solid rgba(255,255,255,0.1);">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary" style="padding:12px 24px; border-radius:8px;">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
