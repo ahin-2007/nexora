@@ -18,7 +18,7 @@ def init_database():
         phone="+1 (555) 019-2831",
         avatar_url="/static/uploads/admin_avatar.jpg"
     )
-    admin.set_password("admin123")
+    admin.set_password("admin1234")
     db.session.add(admin)
     
     # Sample courses

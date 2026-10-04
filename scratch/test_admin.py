@@ -14,11 +14,11 @@ def test_admin_portal():
     
     print("[*] Starting Admin Portal Automated Verification...")
     
-    # 1. Accessing /admin when not logged in should fail with 401
+    # 1. Accessing /admin when not logged in should redirect to /admin/login
     resp = client.get('/admin')
-    assert resp.status_code == 401
-    assert b'Authentication required' in resp.data
-    print("[OK] Correctly redirected/failed guest user trying to access /admin")
+    assert resp.status_code == 302
+    assert '/admin/login' in resp.headers.get('Location', '')
+    print("[OK] Correctly redirected guest user trying to access /admin")
     
     # Let's create a test context and seed users
     with app.app_context():
@@ -43,8 +43,10 @@ def test_admin_portal():
         admin_user = User.query.filter_by(email="admin@nexora.com").first()
         if not admin_user:
             admin_user = User(name="Administrator", email="admin@nexora.com")
-            admin_user.set_password("admin123")
+            admin_user.set_password("admin1234")
             db.session.add(admin_user)
+        else:
+            admin_user.set_password("admin1234")
         
         db.session.commit()
         
@@ -52,7 +54,7 @@ def test_admin_portal():
         admin_user_id = admin_user.id
 
     # 2. Access student login route with admin credentials - should fail with 400 and flag redirect
-    resp = client.post('/login', data={'email': 'admin@nexora.com', 'password': 'admin123'})
+    resp = client.post('/login', data={'email': 'admin@nexora.com', 'password': 'admin1234'})
     assert resp.status_code == 400
     assert resp.get_json()['redirect_to_admin_login'] is True
     print("[OK] Correctly blocked admin from student login page and redirected to admin login")
@@ -76,7 +78,7 @@ def test_admin_portal():
     
     # 5. Login as admin via POST to /admin/login, check dashboard access
     client = app.test_client()
-    resp = client.post('/admin/login', data={'email': 'admin@nexora.com', 'password': 'admin123'})
+    resp = client.post('/admin/login', data={'email': 'admin@nexora.com', 'password': 'admin1234'})
     assert resp.status_code == 200
     assert b'Welcome to the Admin Portal' in resp.data
     print("[OK] Successfully logged in and accessed Admin Dashboard via /admin/login")

@@ -1,10 +1,19 @@
 from datetime import datetime, timezone
+from typing import Any
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
-class User(db.Model):
+
+class BaseModel(db.Model):
+    __abstract__ = True
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+
+
+class User(BaseModel):
     __tablename__ = 'users'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -31,7 +40,7 @@ class User(db.Model):
         return f"<User {self.email}>"
 
 
-class Course(db.Model):
+class Course(BaseModel):
     __tablename__ = 'courses'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -60,7 +69,7 @@ class Course(db.Model):
         return f"<Course {self.title}>"
 
 
-class Lecture(db.Model):
+class Lecture(BaseModel):
     __tablename__ = 'lectures'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -80,7 +89,7 @@ class Lecture(db.Model):
         return f"<Lecture {self.title} (Course ID: {self.course_id})>"
 
 
-class Enrollment(db.Model):
+class Enrollment(BaseModel):
     __tablename__ = 'enrollments'
     __table_args__ = (db.UniqueConstraint('user_id', 'course_id', name='uq_user_course_enrollment'),)
     
@@ -98,7 +107,7 @@ class Enrollment(db.Model):
         return f"<Enrollment User: {self.user_id} Course: {self.course_id}>"
 
 
-class Progress(db.Model):
+class Progress(BaseModel):
     __tablename__ = 'progress'
     __table_args__ = (db.UniqueConstraint('user_id', 'lecture_id', name='uq_user_lecture_progress'),)
     
@@ -111,7 +120,7 @@ class Progress(db.Model):
         return f"<Progress User: {self.user_id} Lecture: {self.lecture_id}>"
 
 
-class StudyMaterial(db.Model):
+class StudyMaterial(BaseModel):
     __tablename__ = 'study_materials'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -127,7 +136,7 @@ class StudyMaterial(db.Model):
         return f"<StudyMaterial {self.title} ({self.file_type})>"
 
 
-class Comment(db.Model):
+class Comment(BaseModel):
     __tablename__ = 'comments'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -142,7 +151,7 @@ class Comment(db.Model):
         return f"<Comment user={self.user_id} lecture={self.lecture_id}>"
 
 
-class QuizQuestion(db.Model):
+class QuizQuestion(BaseModel):
     __tablename__ = 'quiz_questions'
     
     id = db.Column(db.Integer, primary_key=True)
@@ -161,7 +170,7 @@ class QuizQuestion(db.Model):
         return f"<QuizQuestion id={self.id} course_id={self.course_id}>"
 
 
-class QuizScore(db.Model):
+class QuizScore(BaseModel):
     __tablename__ = 'quiz_scores'
     
     id = db.Column(db.Integer, primary_key=True)
